@@ -15,11 +15,12 @@ public class App
     public static class Map extends MapReduceBase implements Mapper<LongWritable, Text, Text, IntWritable> {
         private final static IntWritable one = new IntWritable(1);
         private Text word = new Text();
-    
+        
+        //parses input one line at a time
         public void map(LongWritable key, Text value, OutputCollector<Text, IntWritable> output, Reporter reporter) throws IOException {
             String line = value.toString();
             StringTokenizer tokenizer = new StringTokenizer(line);
-            while (tokenizer.hasMoreTokens()) {
+            while (tokenizer.hasMoreTokens()) { //one line
                 word.set(tokenizer.nextToken());
                 output.collect(word, one);
             }
@@ -27,6 +28,9 @@ public class App
     }
     
     public static class Reduce extends MapReduceBase implements Reducer<Text, IntWritable, Text, IntWritable> {
+        
+        //right now this adds up the number of words
+        //in final implemetation, this will identify common peers of two nodes
         public void reduce(Text key, Iterator<IntWritable> values, OutputCollector<Text, IntWritable> output, Reporter reporter) throws IOException {
             int sum = 0;
             while (values.hasNext()) {
@@ -37,6 +41,7 @@ public class App
     }
     public static void main(String[] args) throws Exception
     {
+    //sets up job configuration for hadoop
     JobConf conf = new JobConf(App.class);
     conf.setJobName("wordcount");
 
