@@ -30,8 +30,7 @@ public class App
             StringTokenizer itr = new StringTokenizer(value.toString());
             while (itr.hasMoreTokens()) 
             {
-                Text word = new Text();
-                word.set(itr.nextToken());
+                Text word = new Text(itr.nextToken());
                 tokenMap.put(word, new IntWritable(1));
                 context.write(word, new IntWritable(1));
             }
@@ -64,13 +63,15 @@ public class App
             Collection<Text> tokensSet = current.keySet();
             for (Text token : tokensSet)
             {
-                IntWritable temp = current.get(token);
                 if (result.containsKey(token))
                 {
-                    int frequency = temp.get();
-                    temp.set(frequency + 1);
+                    temp = result.get(token);
+                    temp.set(temp.get() + 1);
                 }
-                result.put(token, temp);
+                else
+                {
+                    result.put(token, current.get(token));
+                }
             }
         }
         return result;
