@@ -17,11 +17,10 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class App
 {
-    private static Collection<java.util.Map<Text,IntWritable>> tokenMapList = new LinkedList<>();
+    private static final Collection<java.util.Map<Text,IntWritable>> TOKEN_MAP_LIST = new LinkedList<>();
     
     public static class Map extends Mapper<Object, Text, Text, IntWritable>
     {
-        private final static IntWritable one = new IntWritable(1);
             //parses input one line at a time
             //need to change this to parse and store peers in some structure
         @Override
@@ -33,10 +32,10 @@ public class App
             {
                 Text word = new Text();
                 word.set(itr.nextToken());
-                tokenMap.put(word, one);
-                context.write(word, one);
+                tokenMap.put(word, new IntWritable(1));
+                context.write(word, new IntWritable(1));
             }
-            tokenMapList.add(tokenMap);
+            TOKEN_MAP_LIST.add(tokenMap);
         }
     }
 
@@ -60,7 +59,7 @@ public class App
     private static java.util.Map<Text, IntWritable> flatten()
     {
         java.util.Map<Text,IntWritable> result = new HashMap<>();
-        for (java.util.Map<Text,IntWritable> current : tokenMapList)
+        for (java.util.Map<Text,IntWritable> current : TOKEN_MAP_LIST)
         {
             Collection<Text> tokensSet = current.keySet();
             for (Text token : tokensSet)
