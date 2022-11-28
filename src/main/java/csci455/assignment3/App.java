@@ -1,11 +1,9 @@
 package csci455.assignment3;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 import java.util.StringTokenizer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -19,7 +17,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class App
 {
-    private static List<java.util.Map<Text,IntWritable>> tokenMapList = new LinkedList<>();
+    private static Collection<java.util.Map<Text,IntWritable>> tokenMapList = new LinkedList<>();
     
     public static class Map extends Mapper<Object, Text, Text, IntWritable>
     {
@@ -44,14 +42,14 @@ public class App
 
     public static class IntSumReducer extends Reducer<Text,IntWritable,Text,IntWritable> 
     {
-        private IntWritable result = new IntWritable();
 
     //right now this adds up the number of each word
     //in final implemetation, this will identify common peers of two nodes
+        @Override
         public void reduce(Text key, Iterable<IntWritable> values,Context context) throws IOException, InterruptedException 
         {
             java.util.Map<Text,IntWritable> tokenMap = flatten();
-            Set<Text> tokenSet = tokenMap.keySet();
+            Collection<Text> tokenSet = tokenMap.keySet();
             for (Text token : tokenSet)
             {
                 context.write(token, tokenMap.get(token));
@@ -64,7 +62,7 @@ public class App
         java.util.Map<Text,IntWritable> result = new HashMap<>();
         for (java.util.Map<Text,IntWritable> current : tokenMapList)
         {
-            Set<Text> tokensSet = current.keySet();
+            Collection<Text> tokensSet = current.keySet();
             for (Text token : tokensSet)
             {
                 IntWritable temp = current.get(token);
